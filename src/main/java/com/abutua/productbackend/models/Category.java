@@ -1,7 +1,17 @@
 package com.abutua.productbackend.models;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+//jpa
+@Entity
+@Table(name="TBL_CATEGORY")
 public class Category {
+
+    @Id // chave Primária
     private int id;
+
     private String name;
 
     public Category(int id, String name) {
