@@ -9,7 +9,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.abutua.productbackend.models.Category;
 import com.abutua.productbackend.models.Product;
-import com.abutua.productbackend.repositories.CategoryRepository;
 import com.abutua.productbackend.repositories.ProductRepository;
 
 @Service
@@ -17,11 +16,12 @@ public class ProductService {
 
   @Autowired
   private ProductRepository productRepository;
-
+  
   @Autowired
-  private CategoryRepository categoryRepository;
+  private CategoryService categoryService;
 
-  public Product getbyId(int id) {
+
+  public Product getProductById(int id) {
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     return product;
@@ -36,17 +36,16 @@ public class ProductService {
   }
 
   public void deleteById(int id) {
-    Product product = getbyId(id);
+    Product product = getProductById(id);
     productRepository.delete(product);
   }
 
   public void update(int id, Product productUpdate) {
-    Product product = getbyId(id);
+    Product product = getProductById(id);
     if (productUpdate.getIdcategory() == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category is required");
     }
-    Category category = categoryRepository.findById(productUpdate.getIdcategory().getId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+    Category category = categoryService.getCategoryByID(productUpdate.getIdcategory().getId());
 
     product.setName(productUpdate.getName());
     product.setDescription(productUpdate.getDescription());
