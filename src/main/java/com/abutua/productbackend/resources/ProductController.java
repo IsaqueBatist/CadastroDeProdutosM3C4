@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,10 +23,10 @@ import com.abutua.productbackend.repositories.ProductRepository;
 @RestController
 @CrossOrigin
 public class ProductController {
-    
+
     @Autowired
     private ProductRepository productRepository;
-    
+
     @PostMapping("products")
     public ResponseEntity<Product> save(@RequestBody Product product) {
 
@@ -43,15 +44,25 @@ public class ProductController {
 
     @GetMapping("products/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable int id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
         return ResponseEntity.ok(product);
     }
 
-
     @GetMapping("products")
     public List<Product> getProducts() {
         return productRepository.findAll();
+    }
+
+    @DeleteMapping("products/{id}")
+    public ResponseEntity<Void> removeProduct(@PathVariable int id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        productRepository.delete(product);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
